@@ -24,10 +24,10 @@ CREATE TABLE IF NOT EXISTS restaurants (
 -- bookings table
 CREATE TABLE IF NOT EXISTS bookings (
                                         id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    restaurant_id BIGNT NOT NULL,
+    restaurant_id BIGINT NOT NULL,
     user VARCHAR(100) NOT NULL,
     people INT,
-    when_ts DATETIME,
+    when_ts TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (restaurant_id) REFERENCES restaurants(id) ON DELETE CASCADE
     );

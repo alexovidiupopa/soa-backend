@@ -82,10 +82,12 @@ func createBooking(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "bad request", http.StatusBadRequest)
 		return
 	}
+
 	// save booking
 	_, err := db.Exec("INSERT INTO bookings (restaurant_id, user, people, when_ts) VALUES (?, ?, ?, ?)",
 		b.RestaurantID, b.User, b.People, b.When)
 	if err != nil {
+		log.Printf(err.Error())
 		http.Error(w, "db error", http.StatusInternalServerError)
 		return
 	}
@@ -94,7 +96,7 @@ func createBooking(w http.ResponseWriter, r *http.Request) {
 	go publishRabbitNotification(b)
 
 	// optionally also write to Kafka bookings topic
-	go produceKafkaBooking(b)
+	//go produceKafkaBooking(b)
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(b)
