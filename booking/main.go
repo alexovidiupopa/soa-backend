@@ -67,6 +67,7 @@ func main() {
 
 	r := mux.NewRouter()
 	api := r.PathPrefix("/api").Subrouter()
+	api.Use(jwtAuthMiddleware)
 	api.HandleFunc("/bookings", createBooking).Methods("POST")
 	api.HandleFunc("/bookings/{id}", getBooking).Methods("GET")
 	api.HandleFunc("/bookings", listBookings).Methods("GET")

@@ -4,29 +4,9 @@ A full microservices-based restaurant booking platform built in **Go**, demonstr
 
 ---
 
-## Architecture Overview
+## System Design Overview
 
-```mermaid
-flowchart TD
-    A[Web App REST + Micro Frontend] --> B[NGINX Load Balancer]
-
-    B --> C1[Auth Service JWT + MySQL]
-    B --> C2[Restaurants Service Kafka Producer]
-    B --> C3[Bookings Service Kafka Consumer + Rabbit Producer]
-
-    C2 -->|Restaurant Added/Removed| K[(Kafka)]
-    K -->|Restaurant Events| C3
-
-    C3 -->|Booking Notifications| R[(RabbitMQ)]
-    R --> D[Notification Service Calls OpenFaaS]
-
-    D --> F[(OpenFaaS Gateway)]
-    F --> FN[send-email Function]
-
-    C1 --> M[(MySQL)]
-    C2 --> M
-    C3 --> M
-```
+![System Design Diagram](img.png)
 
 ---
 
