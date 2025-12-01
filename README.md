@@ -43,7 +43,6 @@ A full microservices-based restaurant booking platform built in **Go**, demonstr
 
 ### 4. Notification Service
 - Consumes booking messages from RabbitMQ.
-- Invokes a local OpenFaaS function (`send-email`) via REST to simulate or send actual emails.
 
 ---
 
@@ -89,48 +88,6 @@ Includes sample users, restaurants, and bookings in `mysql/init.sql`.
 
 ---
 
-## OpenFaaS Function: `send-email`
-
-Located under `/send-email`:
-
-```go
-package function
-
-import (
-	"context"
-	"encoding/json"
-	"fmt"
-	"log"
-)
-
-type EmailRequest struct {
-	To      string `json:"to"`
-	Subject string `json:"subject"`
-	Body    string `json:"body"`
-}
-
-func Handle(ctx context.Context, req []byte) ([]byte, error) {
-	var msg EmailRequest
-	if err := json.Unmarshal(req, &msg); err != nil {
-		return nil, fmt.Errorf("invalid JSON: %v", err)
-	}
-
-	log.Printf("Sending email to %s\nSubject: %s\nBody: %s\n", msg.To, msg.Subject, msg.Body)
-	return []byte(fmt.Sprintf("Email successfully sent to %s", msg.To)), nil
-}
-```
-
-Deploy with:
-```bash
-faas-cli build -f stack.yml
-faas-cli deploy -f stack.yml
-```
-
-Test:
-```bash
-curl -X POST http://localhost:8080/function/send-email   -H "Content-Type: application/json"   -d '{"to":"alice@example.com","subject":"Booking Confirmed","body":"Your reservation is confirmed."}'
-```
-
 ---
 
 ## Docker Compose Overview
@@ -143,7 +100,6 @@ The setup includes:
 - `rabbitmq`
 - `nginx` load balancer
 - Go microservices (`auth`, `restaurants`, `bookings`, `notification`)
-- Optional `gateway` for OpenFaaS (local mode)
 
 Each Go service includes a `depends_on` block to ensure database and brokers are ready before startup.
 
@@ -164,18 +120,6 @@ docker compose up -d --build
 ### 3. Wait for all services to become healthy
 ```bash
 docker compose ps
-```
-
-### 4. Start OpenFaaS locally (optional)
-```bash
-git clone https://github.com/openfaas/faas
-cd faas
-docker compose up -d
-```
-
-Deploy the `send-email` function:
-```bash
-faas-cli up -f stack.yml
 ```
 
 ---
@@ -212,7 +156,6 @@ Check logs of:
 | Database | MySQL 8 |
 | Message Broker | RabbitMQ |
 | Event Streaming | Kafka (Confluent) |
-| Function-as-a-Service | OpenFaaS |
 | Load Balancing | Nginx |
 | Containerization | Docker & Docker Compose |
 | Authentication | JWT |
