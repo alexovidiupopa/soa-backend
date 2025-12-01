@@ -43,6 +43,7 @@ A full microservices-based restaurant booking platform built in **Go**, demonstr
 
 ### 4. Notification Service
 - Consumes booking messages from RabbitMQ.
+- Invokes a local OpenFaaS function (`send-email`) via REST to simulate or send actual emails.
 
 ---
 
@@ -88,6 +89,48 @@ Includes sample users, restaurants, and bookings in `mysql/init.sql`.
 
 ---
 
+## OpenFaaS Function: `send-email`
+
+Located under `/send-email`:
+
+```go
+package function
+
+import (
+	"fmt"
+	"io"
+	"net/http"
+)
+
+func Handle(w http.ResponseWriter, r *http.Request) {
+	var input []byte
+
+	if r.Body != nil {
+		defer r.Body.Close()
+
+		body, _ := io.ReadAll(r.Body)
+
+		input = body
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(fmt.Sprintf("Sending email: %s", string(input))))
+}
+
+```
+
+Deploy with:
+```bash
+faas-cli build -f stack.yml
+faas-cli deploy -f stack.yml
+```
+
+Test:
+```bash
+curl -X POST http://localhost:8080/function/send-email   -H "Content-Type: application/json"   -d '{"to":"alice@example.com","subject":"Booking Confirmed","body":"Your reservation is confirmed."}'
+```
+
+
 ---
 
 ## Docker Compose Overview
@@ -100,6 +143,7 @@ The setup includes:
 - `rabbitmq`
 - `nginx` load balancer
 - Go microservices (`auth`, `restaurants`, `bookings`, `notification`)
+- Optional `gateway` for OpenFaaS (local mode)
 
 Each Go service includes a `depends_on` block to ensure database and brokers are ready before startup.
 
@@ -120,6 +164,16 @@ docker compose up -d --build
 ### 3. Wait for all services to become healthy
 ```bash
 docker compose ps
+```
+
+### 4. Install and start OpenFaaS locally (optional)
+```bash
+arkade install openfaas-ce
+```
+
+Deploy the `send-email` function:
+```bash
+faas-cli up -f stack.yaml
 ```
 
 ---
@@ -156,6 +210,7 @@ Check logs of:
 | Database | MySQL 8 |
 | Message Broker | RabbitMQ |
 | Event Streaming | Kafka (Confluent) |
+| Function-as-a-Service | OpenFaaS |
 | Load Balancing | Nginx |
 | Containerization | Docker & Docker Compose |
 | Authentication | JWT |

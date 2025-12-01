@@ -199,6 +199,7 @@ func publishRabbitNotification(b Booking) {
 		"type": "booking.created",
 		"data": b,
 	}
+	log.Printf("sending payload: %v", payload)
 	bs, _ := json.Marshal(payload)
 	if err := conn.Publish("", q.Name, false, false, amqp.Publishing{ContentType: "application/json", Body: bs}); err != nil {
 		log.Printf("rabbit publish err: %v", err)
