@@ -1,11 +1,8 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
-	"fmt"
 	"log"
-	"net/http"
 	"os"
 
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -58,26 +55,4 @@ func getenv(k, d string) string {
 		return v
 	}
 	return d
-}
-
-func triggerFaas(event NotificationEvent) error {
-	// Local OpenFaaS gateway
-	gateway := "http://gateway:8080" // if running inside docker-compose
-
-	function := "send-email" // replace with your function name
-	url := fmt.Sprintf("%s/function/%s", gateway, function)
-
-	payload, _ := json.Marshal(event)
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(payload))
-	if err != nil {
-		return fmt.Errorf("failed to invoke OpenFaaS function: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("faas function returned %s", resp.Status)
-	}
-
-	log.Printf("invoked OpenFaaS function '%s' for %s", function, event.Email)
-	return nil
 }

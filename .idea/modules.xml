@@ -6,7 +6,6 @@
       <module fileurl="file://$PROJECT_DIR$/booking.iml" filepath="$PROJECT_DIR$/booking.iml" />
       <module fileurl="file://$PROJECT_DIR$/notification.iml" filepath="$PROJECT_DIR$/notification.iml" />
       <module fileurl="file://$PROJECT_DIR$/restaurants.iml" filepath="$PROJECT_DIR$/restaurants.iml" />
-      <module fileurl="file://$PROJECT_DIR$/send-email.iml" filepath="$PROJECT_DIR$/send-email.iml" />
       <module fileurl="file://$PROJECT_DIR$/soa-backend.iml" filepath="$PROJECT_DIR$/soa-backend.iml" />
     </modules>
   </component>
